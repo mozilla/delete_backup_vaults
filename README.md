@@ -36,14 +36,14 @@ region = us-east-1
 
 # Files
 
-| File                                 | What is it                                                                                                                                                                                 |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `README.md`                          | Documentation                                                                                                                                                                              |
-| `example_list_vaults.py`             | Request a list of backup vaults from AWS. Save the output to a `json` file.                                                                                                                |
-| `example_list_stacks.py`             | Request a list of stacks from AWS. Filter those without parents (non-nested stacks), and save those to a `json` file.                                                                      |
+|                                 File | What is it                                                                                                                                                                                 |
+| -----------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|                          `README.md` | Documentation                                                                                                                                                                              |
+|             `example_list_vaults.py` | Request a list of backup vaults from AWS. Save the output to a `json` file.                                                                                                                |
+|             `example_list_stacks.py` | Request a list of stacks from AWS. Filter those without parents (non-nested stacks), and save those to a `json` file.                                                                      |
 | `example_list_stack_owned_vaults.py` | Load a json file of stacks. Find the BackupVaultName from its resource list.                                                                                                               |
-| `example_filter_vaults.py`           | Filter the list of backup vaults to delete. Do not delete vaults associated with active stacks.                                                                                            |
-| `json_utils.py`                      | Provides `read_json_file` and `write_json_file`, which do what they sound like. Also resolves a problem with serializing and deserializing ISO timestamps, which we receive from AWS APIs. |
+|           `example_filter_vaults.py` | Filter the list of backup vaults to delete. Do not delete vaults associated with active stacks.                                                                                            |
+|                      `json_utils.py` | Provides `read_json_file` and `write_json_file`, which do what they sound like. Also resolves a problem with serializing and deserializing ISO timestamps, which we receive from AWS APIs. |
 
 # Running the examples
 
