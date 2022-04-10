@@ -14,5 +14,10 @@ stacks = (
 )
 
 
-stacks_without_parents = filter(lambda stack: stack.get("ParentId") == None, stacks)
-write_json_file("data/stacks.json", list(stacks_without_parents))
+def hasNoParent(stack):
+    return stack.get("ParentId") == None
+
+
+root_stacks = filter(hasNoParent, stacks)
+write_json_file("data/stacks.json", list(root_stacks))
+print("Wrote ./data/stacks.json")

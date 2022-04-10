@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-
 from boto3 import client
 from json_utils import load_json_file, write_json_file
 
 
-def get_resources(stack):
+def get_stack_resources(stack):
     return (
         client("cloudformation")
         .list_stack_resources(StackName=stack.get("StackName"))
@@ -25,8 +24,9 @@ def get_vault_id(vault):
 
 
 stacks = load_json_file("data/stacks.json")
-resources = map(get_resources, stacks)
+resources = map(get_stack_resources, stacks)
 backup_vaults = map(get_backup_vault, resources)
 vaults_to_keep = map(get_vault_id, backup_vaults)
 
 write_json_file("data/vaults_to_keep.json", list(vaults_to_keep))
+print("Wrote ./data/vaults_to_keep.json")
