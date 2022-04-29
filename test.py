@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from boto3 import client
 from json_utils import load_json_file, write_json_file
-#import pprint
 from pprint import pprint
+from functools import reduce
 
 #vaults = load_json_file("data/vaults.json")
 #stacks = load_json_file("data/stacks.json")
@@ -90,27 +90,34 @@ def getAllRecoveryPoints(vaultName):
 	#print("Recovery Point are: ") 
 	#pprint(recoveryPointsList)
 	return recoveryPointsList
-
-recoveryPointsList = list(map(getAllRecoveryPoints, vaultNames))
-
+listOfRecoveryPointLists = list(map(getAllRecoveryPoints, vaultNames))
 
 
-pprint(recoveryPointsList)
-print(len(recoveryPointsList))
+def concat(listA, listB):
+    return listA + listB
 
 
+def flatten(listOfLists):
+    return reduce(concat, listOfLists)
+
+
+flattenedListOfRecoveryPoints = flatten(listOfRecoveryPointLists)
+
+
+# pprint(recoveryPointsList)
+# print(len(recoveryPointsList))
 # NEED TO GET REOVERY POINT ARN FOR EACH
 
+
 def getNameAndARN(recoveryPoint):
-	name = recoveryPoint.get("BackupVaultName")
-	arn = recoveryPoint.get("RecoveryPointArn")
-	myDict = {"BackupVaultName":name, "RecoveryPointArn":arn}
-	return myDict
-
-stuffToDelete = list(map(getNameAndARN, recoveryPointsList))
-pprint(stuffToDelete)
+    name = recoveryPoint.get("BackupVaultName")
+    arn = recoveryPoint.get("RecoveryPointArn")
+    myDict = {"BackupVaultName": name, "RecoveryPointArn": arn}
+    return myDict
 
 
+stuffToDelete = list(map(getNameAndARN, flattenedListOfRecoveryPoints))
+# pprint(stuffToDelete)
 
 
 """
@@ -125,4 +132,22 @@ pprint(RecoveryPointArnList)  # I get "None" 63 times.  Something isn't right...
 
 # 4)  Delete recovery points.
 
+
+def deleteRecoveryPoint(nameAndArn):
+    name = nameAndArn.get("BackupVaultName")
+    arn = nameAndArn.get("RecoveryPointArn")
+    print("Ok, time to delete ", name, arn)
+    # TODO: Tell amazon to delete this Recovery point
+
+
+list(map(deleteRecoveryPoint, stuffToDelete))
+
 # 5)  Delete vault.
+
+
+def deleteVault(name):
+    print("OK, time to delete a vault... ", name)
+    # TODO: Tell amazon to delete the vault
+
+
+list(map(deleteVault, vaultNames))
