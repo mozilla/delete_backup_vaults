@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from tokenize import Name
 from boto3 import client
 from json_utils import load_json_file, write_json_file
 from pprint import pprint
@@ -136,18 +137,21 @@ pprint(RecoveryPointArnList)  # I get "None" 63 times.  Something isn't right...
 def deleteRecoveryPoint(nameAndArn):
     name = nameAndArn.get("BackupVaultName")
     arn = nameAndArn.get("RecoveryPointArn")
+    client('backup').delete_recovery_point(
+        BackupVaultName = name,
+        RecoveryPointArn = arn
+		)
     print("Ok, time to delete ", name, arn)
-    # TODO: Tell amazon to delete this Recovery point
-
-
 list(map(deleteRecoveryPoint, stuffToDelete))
 
 # 5)  Delete vault.
 
 
 def deleteVault(name):
-    print("OK, time to delete a vault... ", name)
-    # TODO: Tell amazon to delete the vault
+     print("OK, time to delete a vault... ", name)
+     client('backup').delete_backup_vault(
+		 BackupVaultName= name
+	 )
 
 
 list(map(deleteVault, vaultNames))
