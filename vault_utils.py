@@ -8,7 +8,6 @@ from time import sleep
 from botocore.exceptions import ClientError
 
 
-
 def getAllRecoveryPoints(vaultName):
 	data =  client("backup").list_recovery_points_by_backup_vault(BackupVaultName = vaultName)
 	recoveryPointsList = data.get("RecoveryPoints")
@@ -22,12 +21,11 @@ def deleteRecoveryPoint(recoveryPoint):
         BackupVaultName = name,
         RecoveryPointArn = arn
 		)
-    print("Deleted ", name, arn)
 
 
 def emptyVault(vaultName):
 	points = getAllRecoveryPoints(vaultName)
-	print(len(points))
+	print("Okay, deleting", len(points), "recovery points.")
 	for point in points:
 		deleteRecoveryPoint(point)
 	sleep(3)
@@ -36,6 +34,7 @@ def emptyVault(vaultName):
 		return True
 	else:
 		return False
+
 
 # make sure vault exists
 def backupVaultExists(vaultName):
@@ -47,7 +46,9 @@ def backupVaultExists(vaultName):
 		#print("The error was: ", error)
 		return False
 
+
 def deleteVault(vaultName):
+	print("Deleting vault...", vaultName)
 	if backupVaultExists(vaultName) == False:
 		# raise error
 		print("Vault", vaultName, "does not exist!")
@@ -57,20 +58,9 @@ def deleteVault(vaultName):
 		client('backup').delete_backup_vault(BackupVaultName= vaultName)
 		sleep(3)
 		if backupVaultExists(vaultName) == False:
-			print("Vault was successfully deleted.")
+			print("Vault", vaultName,  "was successfully deleted.")
 		else:
 			print("Error.  Failed.")
-
 	else:
 		print("Vault is not empty!")
-
-
-#deleteVault("prod-update-97-daily-backup-79594170")
-
-
-#def getAllActiveVaults():
-	
-
-
-
 
