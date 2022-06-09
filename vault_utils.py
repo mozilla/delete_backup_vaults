@@ -25,6 +25,10 @@ def deleteRecoveryPoint(recoveryPoint):
 
 def emptyVault(vaultName):
 	points = getAllRecoveryPoints(vaultName)
+	if not points:
+		print("This vault has no recovery points.")
+		return True
+
 	print("Okay, deleting", len(points), "recovery points.")
 	for point in points:
 		deleteRecoveryPoint(point)
@@ -47,12 +51,23 @@ def backupVaultExists(vaultName):
 		return False
 
 
-def deleteVault(vaultName):
-	print("Deleting vault...", vaultName)
+defaultAttempts = 50
+def deleteVault(vaultName, attempts=defaultAttempts):
+	if (attempts == defaultAttempts):
+		print(f"Deleting vault: {vaultName}")
+	else:
+		print(f"Number of attempts remaining #{attempts}")
+
+	if (attempts == 0):
+		print(f"Failed to delete vault: {vaultName}")
+		return false
+
 	if backupVaultExists(vaultName) == False:
 		# raise error
 		print("Vault", vaultName, "does not exist!")
 		return
+
+
 	vaultIsEmpty = emptyVault(vaultName)
 	if vaultIsEmpty == True:
 		client('backup').delete_backup_vault(BackupVaultName= vaultName)
@@ -60,7 +75,6 @@ def deleteVault(vaultName):
 		if backupVaultExists(vaultName) == False:
 			print("Vault", vaultName,  "was successfully deleted.")
 		else:
-			print("Error.  Failed.")
+			deleteVault(vaultName, attempts-1)
 	else:
-		print("Vault is not empty!")
-
+		deleteVault(vaultName, attempts-1)

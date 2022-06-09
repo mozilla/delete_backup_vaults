@@ -8,6 +8,7 @@ These python scripts delete unnecessary backup vaults from AWS.
 - Install `pip`
 - Install `maws-aws-cli` (via `pip`)
 - Install `boto3` (via `pip`)
+- Install `termcolor` (via `pip`)
 - Run `$(maws)` before executing these scripts
 - Set your AWS region (Probably `us-east-1`).
 

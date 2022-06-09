@@ -6,37 +6,28 @@ from pprint import pprint
 from functools import reduce
 from time import sleep
 from botocore.exceptions import ClientError
+from termcolor import cprint
 
 from stack_utils import getAllVaults, getVaultsToKeep, filterVaults
 from vault_utils import deleteVault
 
+def name_has_daily_backup(name):
+    return str.find(name, "tubs-daily-backup") >= 0
 
-# 1. GET ALL BACKUP VAULTS  (STACK_UTILS.PY)
-
-allVaults = getAllVaults()  # done
-
-# 2. VAULTS TO KEEP (FROM STACK_UTILS.PY)
-
+allVaults = getAllVaults()
 vaultsToKeep = getVaultsToKeep()
-
-# 3. FILTER LIST OF ALL VAULT NAMES AND REMOVE THE ONES WE WANT TO  KEEP
-
-vaultsToDelete = filterVaults(allVaults, vaultsToKeep)[0:10]
-print("Vaults to delete: ")
-pprint(vaultsToDelete)
-print("Vaults to keep: ")
-pprint(vaultsToKeep)
-
-choice = input("Do you wish to continue with vault deletion? (yes/no): ").strip().lower()
-
-if choice != "yes":
-	print("Exiting.")
-	exit()
-
-print("Okay, continuing...")
-
-# 4. DELETE VAULTS ON THE CHOPPING BLOCK
+vaultsToDelete = list(filter(name_has_daily_backup, filterVaults(allVaults, vaultsToKeep)))
 
 for vault in vaultsToDelete:
-	deleteVault(vault)
-
+    cprint("Here are the vaults we want to keep:", "green")
+    pprint(vaultsToKeep)
+    print()
+    cprint(f"Vault to delete:       {vault}  ", "red")
+    choice = input(f"Delete this vault? (Type \"confirm\"): ").strip().lower()
+    if choice == "confirm":
+        print("Okay, deleting...")
+        deleteVault(vault)
+    else:
+    	print("Skipping this vault.")
+    print()
+    print()

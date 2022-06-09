@@ -13,10 +13,9 @@ statusCode = [
 "CREATE_COMPLETE",
 "CREATE_IN_PROGRESS",
 "CREATE_FAILED",
-"DELETE_FAILED",
+# "DELETE_FAILED", # Let's leave these stacks alone until we know why they failed
 "DELETE_IN_PROGRESS",
 "REVIEW_IN_PROGRESS",
-"ROLLBACK_COMPLETE",
 "ROLLBACK_FAILED",
 "ROLLBACK_IN_PROGRESS",
 "UPDATE_COMPLETE",
@@ -47,25 +46,28 @@ def get_stack_resources(stack):
 
 
 def is_backup_vault(resource):
-    return resource.get("LogicalResourceId") == "DailyBackupVault"
+    return resource.get("PhysicalResourceId") and resource.get("LogicalResourceId") == "DailyBackupVault"
 
 
 def get_backup_vault(resources):
-    return list(filter(is_backup_vault, resources))[0]
+    for resource in resources:
+        if is_backup_vault(resource):
+            return resource
+    raise Exception("Failed to find the backup fault, error!")
 
 
 def get_vault_id(vault):
     return vault.get("PhysicalResourceId")
 
+hubs_cloud_description = "Hubs Cloud: Private Social VR in your web browser. Your own self-hosted hub powered by Hubs by Mozilla. Full documentation: https://github.com/mozilla/hubs-cloud\n"
+def is_hubs_cloud_stack(stack):
+    return hasNoParent(stack) and stack.get("TemplateDescription") == hubs_cloud_description
 
 def getVaultsToKeep():
-    stacks = get_stacks()
-    root_stacks = filter(hasNoParent, stacks)
-    resources = map(get_stack_resources, root_stacks) # PASSING root_stacks HERE
-    backup_vaults = list(map(get_backup_vault, resources))
-    vaults_to_keep = list(map(get_vault_id, backup_vaults))  # had to make this a list
-    return vaults_to_keep
-
+    hubs_cloud_stacks = filter(is_hubs_cloud_stack, get_stacks())
+    resources = map(get_stack_resources, hubs_cloud_stacks)
+    backup_vaults = map(get_backup_vault, resources)
+    return list(map(get_vault_id, backup_vaults))
 
 def filterVaults(allVaults, vaultsToKeep):
     allVaultNames = []
