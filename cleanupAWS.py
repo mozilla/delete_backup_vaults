@@ -12,7 +12,7 @@ from stack_utils import getAllVaults, getVaultsToKeep, filterVaults
 from vault_utils import deleteVault
 
 def name_has_daily_backup(name):
-    return str.find(name, "tubs-daily-backup") >= 0
+    return str.find(name, "daily-backup") >= 0
 
 allVaults = getAllVaults()
 vaultsToKeep = getVaultsToKeep()
